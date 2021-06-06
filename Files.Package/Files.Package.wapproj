@@ -90,8 +90,10 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Files.Launcher\Files.Launcher.csproj">
+      <SkipGetTargetFrameworkProperties>True</SkipGetTargetFrameworkProperties>
+    </ProjectReference>
     <ProjectReference Include="..\Files\Files.csproj" />
-    <ProjectReference Include="..\Files.Launcher\Files.Launcher.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\LargeTile.scale-100.png" />

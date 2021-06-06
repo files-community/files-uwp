@@ -26,6 +26,7 @@ We can confidently assert Files is the platform's best file explorer project to 
 
 ## Building Files source
 - Install Visual Studio 2019 and the UWP Development Kit.
+- Install the latest preview of .NET 6 (for FullTrustProcess)
 - Clone the repository and open the `Files.sln` in VS.
 - Visual Studio will install all missing dependencies.
 - Run the `Files.Package` project.

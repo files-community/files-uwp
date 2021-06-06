@@ -1,5 +1,4 @@
 ﻿using Files.Common;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -11,6 +10,7 @@ using System.IO.Pipes;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Vanara.PInvoke;
@@ -295,7 +295,7 @@ namespace FilesFullTrust
         {
             var message = new Dictionary<string, object>(valueSet);
             message.Add("RequestID", requestID);
-            var serialized = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message));
+            var serialized = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message, new JsonSerializerOptions() { IncludeFields = true }));
             await pipe.WriteAsync(serialized, 0, serialized.Length);
         }
 
