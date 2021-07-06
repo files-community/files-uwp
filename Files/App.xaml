@@ -152,8 +152,10 @@
 
                     <x:Double x:Key="SidebarIconSize">20</x:Double>
                     <Thickness x:Key="NavigationViewContentPresenterMargin">0,0,0,0</Thickness>
-
-                    <!--  WinUI style is breaking us, overriding with a modified version solves crashes in release  -->
+					<Thickness x:Key="NavigationViewContentGridBorderThickness">0,0,0,0</Thickness>
+					<CornerRadius x:Key="NavigationViewContentGridCornerRadius">0,0,0,0</CornerRadius>
+					<Thickness x:Key="NavigationViewPaneContentGridMargin">0</Thickness>
+					<!--  WinUI style is breaking us, overriding with a modified version solves crashes in release  -->
                     <Style x:Key="MUX_NavigationViewItemPresenterStyleWhenOnLeftPane" TargetType="primitives:NavigationViewItemPresenter">
                         <Setter Property="Foreground" Value="{ThemeResource NavigationViewItemForeground}" />
                         <Setter Property="Background" Value="{ThemeResource NavigationViewItemBackground}" />
