@@ -336,13 +336,13 @@ namespace Files.ViewModels
                     fontIconSource.Glyph = "\xE8B7"; // Folder icon
                     tabLocationHeader = currentPath.TrimEnd(System.IO.Path.DirectorySeparatorChar, System.IO.Path.AltDirectorySeparatorChar).Split('\\', StringSplitOptions.RemoveEmptyEntries).Last();
 
-                    FilesystemResult<StorageFolderWithPath> rootItem = await FilesystemTasks.Wrap(() => DrivesManager.GetRootFromPathAsync(currentPath));
+                    FilesystemResult<IStorageFolder> rootItem = await FilesystemTasks.Wrap(() => DrivesManager.GetRootFromPathAsync(currentPath));
                     if (rootItem)
                     {
-                        StorageFolder currentFolder = await FilesystemTasks.Wrap(() => StorageFileExtensions.DangerousGetFolderFromPathAsync(currentPath, rootItem));
-                        if (currentFolder != null && !string.IsNullOrEmpty(currentFolder.DisplayName))
+                        IStorageFolder currentFolder = (await FilesystemTasks.Wrap(() => StorageFileExtensions.DangerousGetFolderFromPathAsync(currentPath, rootItem.Result))).Result;
+                        if (currentFolder is StorageFolder folder && !string.IsNullOrEmpty(folder.DisplayName))
                         {
-                            tabLocationHeader = currentFolder.DisplayName;
+                            tabLocationHeader = folder.DisplayName;
                         }
                     }
                 }

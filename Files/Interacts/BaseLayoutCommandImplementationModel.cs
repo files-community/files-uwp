@@ -224,7 +224,7 @@ namespace Files.Interacts
 
             // Check if destination path exists
             string folderPath = Path.GetDirectoryName(item.TargetPath);
-            FilesystemResult<StorageFolderWithPath> destFolder = await associatedInstance.FilesystemViewModel.GetFolderWithPathFromPathAsync(folderPath);
+            FilesystemResult<IStorageFolder> destFolder = await associatedInstance.FilesystemViewModel.GetFolderWithPathFromPathAsync(folderPath);
 
             if (destFolder)
             {

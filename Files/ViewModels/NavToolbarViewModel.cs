@@ -518,12 +518,12 @@ namespace Files.ViewModels
         public async Task SetPathBoxDropDownFlyoutAsync(MenuFlyout flyout, PathBoxItem pathItem, IShellPage shellPage)
         {
             var nextPathItemTitle = PathComponents[PathComponents.IndexOf(pathItem) + 1].Title;
-            IList<StorageFolderWithPath> childFolders = null;
+            IList<IStorageFolder> childFolders = null;
 
-            StorageFolderWithPath folder = await shellPage.FilesystemViewModel.GetFolderWithPathFromPathAsync(pathItem.Path);
-            if (folder != null)
+            IStorageFolder folder = (await shellPage.FilesystemViewModel.GetFolderWithPathFromPathAsync(pathItem.Path)).Result;
+            if (folder is StorageFolder storageFolder)
             {
-                childFolders = (await FilesystemTasks.Wrap(() => folder.GetFoldersWithPathAsync(string.Empty))).Result;
+                childFolders = (await FilesystemTasks.Wrap(() => storageFolder.GetFoldersWithPathAsync(string.Empty))).Result.Cast<IStorageFolder>().ToList();
             }
             flyout.Items?.Clear();
 
@@ -549,7 +549,7 @@ namespace Files.ViewModels
 
             foreach (var childFolder in childFolders)
             {
-                var isPathItemFocused = childFolder.Item.Name == nextPathItemTitle;
+                var isPathItemFocused = childFolder.Name == nextPathItemTitle;
 
                 var flyoutItem = new MenuFlyoutItem
                 {
@@ -558,7 +558,7 @@ namespace Files.ViewModels
                         Glyph = "\uED25",
                         FontWeight = isPathItemFocused ? boldFontWeight : normalFontWeight
                     },
-                    Text = childFolder.Item.Name,
+                    Text = childFolder.Name,
                     FontSize = 12,
                     FontWeight = isPathItemFocused ? boldFontWeight : normalFontWeight
                 };
@@ -607,7 +607,7 @@ namespace Files.ViewModels
 
                     var item = await FilesystemTasks.Wrap(() => DrivesManager.GetRootFromPathAsync(currentInput));
 
-                    var resFolder = await FilesystemTasks.Wrap(() => StorageFileExtensions.DangerousGetFolderWithPathFromPathAsync(currentInput, item));
+                    var resFolder = await FilesystemTasks.Wrap(() => StorageFileExtensions.DangerousGetFolderWithPathFromPathAsync(currentInput, item.Result));
                     if (resFolder || FolderHelpers.CheckFolderAccessWithWin32(currentInput))
                     {
                         var pathToNavigate = resFolder.Result?.Path ?? currentInput;
@@ -615,7 +615,7 @@ namespace Files.ViewModels
                     }
                     else // Not a folder or inaccessible
                     {
-                        var resFile = await FilesystemTasks.Wrap(() => StorageFileExtensions.DangerousGetFileWithPathFromPathAsync(currentInput, item));
+                        var resFile = await FilesystemTasks.Wrap(() => StorageFileExtensions.DangerousGetFileWithPathFromPathAsync(currentInput, item.Result));
                         if (resFile)
                         {
                             var pathToInvoke = resFile.Result.Path;
@@ -680,27 +680,31 @@ namespace Files.ViewModels
                     var expandedPath = StorageFileExtensions.GetPathWithoutEnvironmentVariable(sender.Text);
                     var folderPath = Path.GetDirectoryName(expandedPath) ?? expandedPath;
                     var folder = await shellpage.FilesystemViewModel.GetFolderWithPathFromPathAsync(folderPath);
-                    var currPath = await folder.Result.GetFoldersWithPathAsync(Path.GetFileName(expandedPath), (uint)maxSuggestions);
+                    if (folder.Result is not StorageFolder storageFolder)
+                    {
+                        return;
+                    }
+                    var currPath = await storageFolder.GetFoldersWithPathAsync(Path.GetFileName(expandedPath), (uint)maxSuggestions);
                     if (currPath.Count() >= maxSuggestions)
                     {
                         suggestions = currPath.Select(x => new ListedItem(null)
                         {
                             ItemPath = x.Path,
-                            ItemName = x.Folder.DisplayName
+                            ItemName = x.DisplayName
                         }).ToList();
                     }
                     else if (currPath.Any())
                     {
-                        var subPath = await currPath.First().GetFoldersWithPathAsync((uint)(maxSuggestions - currPath.Count()));
+                        var subPath = await currPath.First().GetFoldersWithPathAsync("", (uint)(maxSuggestions - currPath.Count()));
                         suggestions = currPath.Select(x => new ListedItem(null)
                         {
                             ItemPath = x.Path,
-                            ItemName = x.Folder.DisplayName
+                            ItemName = x.DisplayName
                         }).Concat(
                             subPath.Select(x => new ListedItem(null)
                             {
                                 ItemPath = x.Path,
-                                ItemName = Path.Combine(currPath.First().Folder.DisplayName, x.Folder.DisplayName)
+                                ItemName = Path.Combine(currPath.First().DisplayName, x.DisplayName)
                             })).ToList();
                     }
                     else

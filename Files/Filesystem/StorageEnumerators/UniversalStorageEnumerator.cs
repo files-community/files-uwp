@@ -19,7 +19,7 @@ namespace Files.Filesystem.StorageEnumerators
     {
         public static async Task<List<ListedItem>> ListEntries(
             StorageFolder rootFolder,
-            StorageFolderWithPath currentStorageFolder,
+            IStorageFolder currentStorageFolder,
             string returnformat,
             Type sourcePageType,
             CancellationToken cancellationToken,
@@ -138,7 +138,7 @@ namespace Files.Filesystem.StorageEnumerators
             return tempList;
         }
 
-        private static async Task<ListedItem> AddFolderAsync(StorageFolder folder, StorageFolderWithPath currentStorageFolder, string dateReturnFormat, CancellationToken cancellationToken)
+        private static async Task<ListedItem> AddFolderAsync(StorageFolder folder, IStorageFolder currentStorageFolder, string dateReturnFormat, CancellationToken cancellationToken)
         {
             var basicProperties = await folder.GetBasicPropertiesAsync();
             var extraProps = await basicProperties.RetrievePropertiesAsync(new[] { "System.DateCreated" });
@@ -168,7 +168,7 @@ namespace Files.Filesystem.StorageEnumerators
 
         private static async Task<ListedItem> AddFileAsync(
             StorageFile file,
-            StorageFolderWithPath currentStorageFolder,
+            IStorageFolder currentStorageFolder,
             string dateReturnFormat,
             bool suppressThumbnailLoading,
             Type sourcePageType,

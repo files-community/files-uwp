@@ -1,6 +1,7 @@
 ﻿using Files.Enums;
 using System;
 using System.Collections.Generic;
+using Windows.Storage;
 
 namespace Files.Filesystem.FilesystemHistory
 {
@@ -19,7 +20,7 @@ namespace Files.Filesystem.FilesystemHistory
         /// <br/>
         /// May contain more that one item
         /// </summary>
-        IEnumerable<IStorageItemWithPath> Source { get; }
+        IEnumerable<IStorageItem> Source { get; }
 
         /// <summary>
         /// Destination file/folder
@@ -29,15 +30,15 @@ namespace Files.Filesystem.FilesystemHistory
         /// <br/>
         /// May contain more that one item
         /// </summary>
-        IEnumerable<IStorageItemWithPath> Destination { get; }
+        IEnumerable<IStorageItem> Destination { get; }
 
         #region Modify
 
         void Modify(IStorageHistory newHistory);
 
-        void Modify(FileOperationType operationType, IEnumerable<IStorageItemWithPath> source, IEnumerable<IStorageItemWithPath> destination);
+        void Modify(FileOperationType operationType, IEnumerable<IStorageItem> source, IEnumerable<IStorageItem> destination);
 
-        void Modify(FileOperationType operationType, IStorageItemWithPath source, IStorageItemWithPath destination);
+        void Modify(FileOperationType operationType, IStorageItem source, IStorageItem destination);
 
         #endregion Modify
     }
