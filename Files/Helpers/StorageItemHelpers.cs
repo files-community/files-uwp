@@ -128,7 +128,7 @@ namespace Files.Helpers
             return returnedItem;
         }
 
-        public static IStorageItemWithPath FromPathAndType(string customPath, FilesystemItemType? itemType)
+        public static IStorageItem FromPathAndType(string customPath, FilesystemItemType? itemType)
         {
             return (itemType == FilesystemItemType.File) ?
                     (IStorageItemWithPath)new StorageFileWithPath(null, customPath) :

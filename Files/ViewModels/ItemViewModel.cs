@@ -87,8 +87,8 @@ namespace Files.ViewModels
             get; private set;
         }
 
-        private StorageFolderWithPath currentStorageFolder;
-        private StorageFolderWithPath workingRoot;
+        private IStorageFolder currentStorageFolder;
+        private IStorageFolder workingRoot;
 
         public delegate void WorkingDirectoryModifiedEventHandler(object sender, WorkingDirectoryModifiedEventArgs e);
 
@@ -152,12 +152,12 @@ namespace Files.ViewModels
             return await FilesystemTasks.Wrap(() => StorageFileExtensions.DangerousGetFileFromPathAsync(value, workingRoot, currentStorageFolder));
         }
 
-        public async Task<FilesystemResult<StorageFolderWithPath>> GetFolderWithPathFromPathAsync(string value)
+        public async Task<FilesystemResult<IStorageFolder>> GetFolderWithPathFromPathAsync(string value)
         {
             return await FilesystemTasks.Wrap(() => StorageFileExtensions.DangerousGetFolderWithPathFromPathAsync(value, workingRoot, currentStorageFolder));
         }
 
-        public async Task<FilesystemResult<StorageFileWithPath>> GetFileWithPathFromPathAsync(string value)
+        public async Task<FilesystemResult<IStorageFile>> GetFileWithPathFromPathAsync(string value)
         {
             return await FilesystemTasks.Wrap(() => StorageFileExtensions.DangerousGetFileWithPathFromPathAsync(value, workingRoot, currentStorageFolder));
         }
@@ -1373,7 +1373,7 @@ namespace Files.ViewModels
             }
         }
 
-        private async Task EnumFromStorageFolderAsync(string path, ListedItem currentFolder, StorageFolder rootFolder, StorageFolderWithPath currentStorageFolder, Type sourcePageType, CancellationToken cancellationToken)
+        private async Task EnumFromStorageFolderAsync(string path, ListedItem currentFolder, StorageFolder rootFolder, IStorageFolder currentStorageFolder, Type sourcePageType, CancellationToken cancellationToken)
         {
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();

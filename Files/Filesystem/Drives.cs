@@ -384,7 +384,7 @@ namespace Files.Filesystem
             return type;
         }
 
-        public static async Task<StorageFolderWithPath> GetRootFromPathAsync(string devicePath)
+        public static async Task<IStorageFolder> GetRootFromPathAsync(string devicePath)
         {
             if (!Path.IsPathRooted(devicePath))
             {
@@ -419,13 +419,13 @@ namespace Files.Filesystem
                 }
                 if (matchingDrive != null)
                 {
-                    return new StorageFolderWithPath(matchingDrive, rootPath);
+                    return matchingDrive;
                 }
             }
             else if (devicePath.StartsWith("\\\\")) // Network share
             {
                 rootPath = rootPath.LastIndexOf("\\") > 1 ? rootPath.Substring(0, rootPath.LastIndexOf("\\")) : rootPath; // Remove share name
-                return new StorageFolderWithPath(await StorageFolder.GetFolderFromPathAsync(rootPath), rootPath);
+                return await StorageFolder.GetFolderFromPathAsync(rootPath);
             }
             // It's ok to return null here, on normal drives StorageFolder.GetFolderFromPathAsync works
             return null;
