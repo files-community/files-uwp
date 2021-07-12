@@ -7,7 +7,8 @@ Files [code of conduct](https://github.com/files-community/Files/blob/main/CODE_
 
 [![Build Status](https://dev.azure.com/lukeblevins150823/Files%20UWP/_apis/build/status/Build%20Pipeline?branchName=main)](https://dev.azure.com/lukeblevins150823/Files%20UWP/_build/latest?definitionId=4&branchName=master)
 [![Discord](https://discordapp.com/api/guilds/725513575971684472/widget.png)](https://discord.gg/files)
-
+[![Github All Releases](https://img.shields.io/github/downloads/files-community/files/total.svg?style=flat&logo=github)](https://github.com/files-community/files/releases)
+[![GitHub release](https://img.shields.io/github/release/files-community/files.svg?style=flat&logo=github)](https://github.com/files-community/files/releases)
 ![Files](Files/Assets/FilesHome.png)
 
 ## Where to get Files
