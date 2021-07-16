@@ -37,7 +37,7 @@ namespace Files.Filesystem
         {
             this.associatedInstance = associatedInstance;
             filesystemOperations = new FilesystemOperations(associatedInstance);
-            recycleBinHelpers = new RecycleBinHelpers(this.associatedInstance);
+            recycleBinHelpers = new RecycleBinHelpers();
         }
 
         #endregion Constructor
@@ -469,7 +469,6 @@ namespace Files.Filesystem
         public void Dispose()
         {
             filesystemOperations?.Dispose();
-            recycleBinHelpers?.Dispose();
 
             filesystemOperations = null;
             recycleBinHelpers = null;

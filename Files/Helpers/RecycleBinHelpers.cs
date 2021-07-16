@@ -13,34 +13,28 @@ using Windows.UI.Xaml.Controls;
 
 namespace Files.Helpers
 {
-    public class RecycleBinHelpers : IDisposable
+    public class RecycleBinHelpers
     {
         #region Private Members
 
         private static readonly Regex recycleBinPathRegex = new Regex(@"\w:\\\$Recycle\.Bin\\.*", RegexOptions.IgnoreCase);
 
-        private IShellPage associatedInstance;
-
-        private NamedPipeAsAppServiceConnection Connection => associatedInstance?.ServiceConnection;
+        private Task<NamedPipeAsAppServiceConnection> ServiceConnection => AppServiceConnectionHelper.Instance;
 
         #endregion Private Members
 
-        public RecycleBinHelpers(IShellPage associatedInstance)
-        {
-            this.associatedInstance = associatedInstance;
-        }
-
         public async Task<List<ShellFileItem>> EnumerateRecycleBin()
         {
-            if (Connection != null)
+            var connection = await ServiceConnection;
+            if (connection != null)
             {
-                ValueSet value = new ValueSet
+                ValueSet value = new ValueSet()
                 {
                     { "Arguments", "ShellFolder" },
                     { "action", "Enumerate" },
                     { "folder", App.AppSettings.RecycleBinPath }
                 };
-                var (status, response) = await Connection.SendMessageForResponseAsync(value);
+                var (status, response) = await connection.SendMessageForResponseAsync(value);
 
                 if (status == AppServiceResponseStatus.Success
                     && response.ContainsKey("Enumerate"))
@@ -70,12 +64,12 @@ namespace Files.Helpers
             return recycleBinPathRegex.IsMatch(path);
         }
 
-        public static void EmptyRecycleBin(IShellPage associatedInstance)
+        public static async Task S_EmptyRecycleBin()
         {
-            new RecycleBinHelpers(associatedInstance).EmptyRecycleBin();
+            await new RecycleBinHelpers().EmptyRecycleBin();
         }
 
-        public async void EmptyRecycleBin()
+        public async Task EmptyRecycleBin()
         {
             var ConfirmEmptyBinDialog = new ContentDialog()
             {
@@ -89,24 +83,19 @@ namespace Files.Helpers
 
             if (result == ContentDialogResult.Primary)
             {
-                if (Connection != null)
+                var connection = await ServiceConnection;
+                if (connection != null)
                 {
-                    var value = new ValueSet();
-                    value.Add("Arguments", "RecycleBin");
-                    value.Add("action", "Empty");
-                    // Send request to fulltrust process to empty recyclebin
-                    await Connection.SendMessageAsync(value);
+                    var value = new ValueSet()
+                    {
+                        { "Arguments", "RecycleBin" },
+                        { "action", "Empty" }
+                    };
+
+                    // Send request to fulltrust process to empty Recycle Bin
+                    await connection.SendMessageAsync(value);
                 }
             }
         }
-
-        #region IDisposable
-
-        public void Dispose()
-        {
-            associatedInstance = null;
-        }
-
-        #endregion IDisposable
     }
 }

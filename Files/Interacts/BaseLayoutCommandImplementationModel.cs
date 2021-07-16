@@ -14,6 +14,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.ApplicationModel.DataTransfer.DragDrop;
 using Windows.Foundation;
@@ -34,8 +35,6 @@ namespace Files.Interacts
     public class BaseLayoutCommandImplementationModel : IBaseLayoutCommandImplementationModel
     {
         #region Singleton
-
-        private NamedPipeAsAppServiceConnection ServiceConnection => associatedInstance?.ServiceConnection;
 
         private IBaseLayout SlimContentPage => associatedInstance?.SlimContentPage;
 
@@ -81,7 +80,8 @@ namespace Files.Interacts
         {
             foreach (ListedItem selectedItem in SlimContentPage.SelectedItems)
             {
-                if (ServiceConnection != null)
+                var connection = await AppServiceConnectionHelper.Instance;
+                if (connection != null)
                 {
                     var value = new ValueSet()
                     {
@@ -97,7 +97,7 @@ namespace Files.Interacts
                                 string.Format("ShortcutCreateNewSuffix".GetLocalized(), selectedItem.ItemName) + ".lnk")
                         }
                     };
-                    await ServiceConnection.SendMessageAsync(value);
+                    await connection.SendMessageAsync(value);
                 }
             }
         }
@@ -114,9 +114,10 @@ namespace Files.Interacts
 
         public virtual async void RunAsAdmin(RoutedEventArgs e)
         {
-            if (ServiceConnection != null)
+            var connection = await AppServiceConnectionHelper.Instance;
+            if (connection != null)
             {
-                await ServiceConnection.SendMessageAsync(new ValueSet()
+                await connection.SendMessageAsync(new ValueSet()
                 {
                     { "Arguments", "InvokeVerb" },
                     { "FilePath", SlimContentPage.SelectedItem.ItemPath },
@@ -127,9 +128,10 @@ namespace Files.Interacts
 
         public virtual async void RunAsAnotherUser(RoutedEventArgs e)
         {
-            if (ServiceConnection != null)
+            var connection = await AppServiceConnectionHelper.Instance;
+            if (connection != null)
             {
-                await ServiceConnection.SendMessageAsync(new ValueSet()
+                await connection.SendMessageAsync(new ValueSet()
                 {
                     { "Arguments", "InvokeVerb" },
                     { "FilePath", SlimContentPage.SelectedItem.ItemPath },
@@ -158,19 +160,19 @@ namespace Files.Interacts
             App.SidebarPinnedController.Model.RemoveItem(associatedInstance.FilesystemViewModel.WorkingDirectory);
         }
 
-        public virtual void EmptyRecycleBin(RoutedEventArgs e)
+        public virtual async void EmptyRecycleBin(RoutedEventArgs e)
         {
-            RecycleBinHelpers.EmptyRecycleBin(associatedInstance);
+            await RecycleBinHelpers.S_EmptyRecycleBin();
         }
 
-        public virtual void QuickLook(RoutedEventArgs e)
+        public virtual async void QuickLook(RoutedEventArgs e)
         {
-            QuickLookHelpers.ToggleQuickLook(associatedInstance);
+            await QuickLookHelpers.ToggleQuickLook(associatedInstance);
         }
 
-        public virtual void CopyItem(RoutedEventArgs e)
+        public virtual async void CopyItem(RoutedEventArgs e)
         {
-            UIFilesystemHelpers.CopyItem(associatedInstance);
+            await UIFilesystemHelpers.CopyItem(associatedInstance);
         }
 
         public virtual void CutItem(RoutedEventArgs e)
@@ -323,9 +325,9 @@ namespace Files.Interacts
             }
         }
 
-        public virtual void OpenDirectoryInDefaultTerminal(RoutedEventArgs e)
+        public virtual async void OpenDirectoryInDefaultTerminal(RoutedEventArgs e)
         {
-            NavigationHelpers.OpenDirectoryInTerminal(associatedInstance.FilesystemViewModel.WorkingDirectory, associatedInstance);
+            await NavigationHelpers.OpenDirectoryInTerminal(associatedInstance.FilesystemViewModel.WorkingDirectory);
         }
 
         public virtual void ShareItem(RoutedEventArgs e)

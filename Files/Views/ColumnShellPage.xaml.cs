@@ -196,7 +196,7 @@ namespace Files.Views
             NavToolbarViewModel.OpenNewWindowCommand = new RelayCommand(NavigationHelpers.LaunchNewWindow);
             NavToolbarViewModel.OpenNewPaneCommand = new RelayCommand(() => PaneHolder?.OpenPathInNewPane("NewTab".GetLocalized()));
             NavToolbarViewModel.ClosePaneCommand = new RelayCommand(() => PaneHolder?.CloseActivePane());
-            NavToolbarViewModel.OpenDirectoryInDefaultTerminalCommand = new RelayCommand(() => NavigationHelpers.OpenDirectoryInTerminal(this.FilesystemViewModel.WorkingDirectory, this));
+            NavToolbarViewModel.OpenDirectoryInDefaultTerminalCommand = new RelayCommand(async () => await NavigationHelpers.OpenDirectoryInTerminal(this.FilesystemViewModel.WorkingDirectory));
             NavToolbarViewModel.AddNewTabToMultitaskingControlCommand = new RelayCommand(async () => await MainPageViewModel.AddNewTabAsync());
             NavToolbarViewModel.CreateNewFileCommand = new RelayCommand<ShellNewEntry>(x => UIFilesystemHelpers.CreateFileFromDialogResultType(AddItemType.File, x, this));
             NavToolbarViewModel.CreateNewFolderCommand = new RelayCommand(() => UIFilesystemHelpers.CreateFileFromDialogResultType(AddItemType.Folder, null, this));
@@ -391,9 +391,9 @@ namespace Files.Views
             });
         }
 
-        private void NavigationToolbar_QuerySubmitted(object sender, ToolbarQuerySubmittedEventArgs e)
+        private async void NavigationToolbar_QuerySubmitted(object sender, ToolbarQuerySubmittedEventArgs e)
         {
-            NavToolbarViewModel.CheckPathInput(e.QueryText, NavToolbarViewModel.PathComponents[NavToolbarViewModel.PathComponents.Count - 1].Path, this);
+            await NavToolbarViewModel.CheckPathInput(e.QueryText, NavToolbarViewModel.PathComponents[NavToolbarViewModel.PathComponents.Count - 1].Path, this);
         }
 
         private void NavigationToolbar_EditModeEnabled(object sender, EventArgs e)
@@ -655,7 +655,7 @@ namespace Files.Views
                 case (true, false, false, true, VirtualKey.C): // ctrl + c, copy
                     if (!NavToolbarViewModel.IsEditModeEnabled && !ContentPage.IsRenamingItem)
                     {
-                        UIFilesystemHelpers.CopyItem(this);
+                        await UIFilesystemHelpers.CopyItem(this);
                     }
 
                     break;
@@ -701,7 +701,7 @@ namespace Files.Views
                     {
                         if (App.MainViewModel.IsQuickLookEnabled)
                         {
-                            QuickLookHelpers.ToggleQuickLook(this);
+                            await QuickLookHelpers.ToggleQuickLook(this);
                         }
                     }
                     break;

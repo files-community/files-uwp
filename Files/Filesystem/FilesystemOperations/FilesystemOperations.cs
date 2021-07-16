@@ -43,7 +43,7 @@ namespace Files.Filesystem
         public FilesystemOperations(IShellPage associatedInstance)
         {
             this.associatedInstance = associatedInstance;
-            recycleBinHelpers = new RecycleBinHelpers(this.associatedInstance);
+            recycleBinHelpers = new RecycleBinHelpers();
         }
 
         #endregion Constructor
@@ -907,8 +907,6 @@ namespace Files.Filesystem
 
         public void Dispose()
         {
-            recycleBinHelpers?.Dispose();
-
             recycleBinHelpers = null;
             associatedInstance = null;
         }

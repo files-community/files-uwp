@@ -42,6 +42,8 @@ namespace Files.Filesystem
 
         private readonly CancellationToken cancellationToken;
 
+        private Task<NamedPipeAsAppServiceConnection> ServiceConnection => AppServiceConnectionHelper.Instance;
+
         private StatusCenterViewModel statusCenterViewModel => App.StatusCenterViewModel;
 
         #region Helpers Members
@@ -68,7 +70,7 @@ namespace Files.Filesystem
             this.associatedInstance = associatedInstance;
             this.cancellationToken = cancellationToken;
             this.filesystemOperations = new ShellFilesystemOperations(this.associatedInstance);
-            this.recycleBinHelpers = new RecycleBinHelpers(this.associatedInstance);
+            this.recycleBinHelpers = new RecycleBinHelpers();
         }
 
         #endregion Constructor
@@ -659,9 +661,10 @@ namespace Files.Filesystem
                 }
                 catch (Exception ex) when ((uint)ex.HResult == 0x80040064 || (uint)ex.HResult == 0x8004006A)
                 {
-                    if (associatedInstance.ServiceConnection != null)
+                    var connection = await ServiceConnection;
+                    if (connection != null)
                     {
-                        var (status, response) = await associatedInstance.ServiceConnection.SendMessageForResponseAsync(new ValueSet() {
+                        var (status, response) = await connection.SendMessageForResponseAsync(new ValueSet() {
                             { "Arguments", "FileOperation" },
                             { "fileop", "DragDrop" },
                             { "droppath", associatedInstance.FilesystemViewModel.WorkingDirectory } });
@@ -1189,17 +1192,17 @@ namespace Files.Filesystem
             return false;
         }
 
-        public async Task OpenShellCommandInExplorerAsync(string shellCommand, NamedPipeAsAppServiceConnection serviceConnection)
+        public async Task OpenShellCommandInExplorerAsync(string shellCommand, NamedPipeAsAppServiceConnection connection)
         {
             Debug.WriteLine("Launching shell command in FullTrustProcess");
-            if (serviceConnection != null)
+            if (connection != null)
             {
                 ValueSet value = new ValueSet()
                 {
                     { "ShellCommand", shellCommand },
                     { "Arguments", "ShellCommand" }
                 };
-                await serviceConnection.SendMessageAsync(value);
+                await connection.SendMessageAsync(value);
             }
         }
 
@@ -1210,7 +1213,6 @@ namespace Files.Filesystem
         public void Dispose()
         {
             filesystemOperations?.Dispose();
-            recycleBinHelpers?.Dispose();
 
             associatedInstance = null;
             filesystemOperations = null;

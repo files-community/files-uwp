@@ -18,18 +18,16 @@ namespace Files.ViewModels.Properties
     public class SecurityProperties : ObservableObject
     {
         public ListedItem Item { get; }
-        public IShellPage AppInstance { get; set; } = null;
 
-        public SecurityProperties(ListedItem item, IShellPage instance)
+        public SecurityProperties(ListedItem item)
         {
             Item = item;
-            AppInstance = instance;
             IsFolder = Item.PrimaryItemAttribute == Windows.Storage.StorageItemTypes.Folder && !Item.IsShortcutItem;
 
             InitCommands();
         }
 
-        public SecurityProperties(DriveItem item, IShellPage instance)
+        public SecurityProperties(DriveItem item)
         {
             Item = new ListedItem()
             {
@@ -38,7 +36,6 @@ namespace Files.ViewModels.Properties
                 PrimaryItemAttribute = Windows.Storage.StorageItemTypes.Folder
             };
 
-            AppInstance = instance;
             IsFolder = true;
 
             InitCommands();
@@ -163,7 +160,8 @@ namespace Files.ViewModels.Properties
 
         private async void ReplaceChildPermissions()
         {
-            if (AppInstance.ServiceConnection != null)
+            var connection = await AppServiceConnectionHelper.Instance;
+            if (connection != null)
             {
                 var value = new ValueSet()
                 {
@@ -172,7 +170,7 @@ namespace Files.ViewModels.Properties
                     { "filepath", Item.ItemPath },
                     { "isfolder", Item.PrimaryItemAttribute == Windows.Storage.StorageItemTypes.Folder && !Item.IsShortcutItem }
                 };
-                await AppInstance.ServiceConnection.SendMessageAsync(value);
+                await connection.SendMessageAsync(value);
             }
         }
 
@@ -245,7 +243,8 @@ namespace Files.ViewModels.Properties
 
         public async void GetFilePermissions()
         {
-            if (AppInstance.ServiceConnection != null)
+            var connection = await AppServiceConnectionHelper.Instance;
+            if (connection != null)
             {
                 var value = new ValueSet()
                 {
@@ -254,7 +253,7 @@ namespace Files.ViewModels.Properties
                     { "filepath", Item.ItemPath },
                     { "isfolder", Item.PrimaryItemAttribute == Windows.Storage.StorageItemTypes.Folder && !Item.IsShortcutItem }
                 };
-                var (status, response) = await AppInstance.ServiceConnection.SendMessageForResponseAsync(value);
+                var (status, response) = await connection.SendMessageForResponseAsync(value);
                 if (status == Windows.ApplicationModel.AppService.AppServiceResponseStatus.Success)
                 {
                     var filePermissions = JsonConvert.DeserializeObject<FilePermissions>((string)response["FilePermissions"]);
@@ -269,7 +268,9 @@ namespace Files.ViewModels.Properties
             {
                 return true;
             }
-            if (AppInstance.ServiceConnection != null)
+
+            var connection = await AppServiceConnectionHelper.Instance;
+            if (connection != null)
             {
                 var value = new ValueSet()
                 {
@@ -277,7 +278,7 @@ namespace Files.ViewModels.Properties
                     { "fileop", "SetFilePermissions" },
                     { "permissions", JsonConvert.SerializeObject(FilePermissions.ToFilePermissions()) }
                 };
-                var (status, response) = await AppInstance.ServiceConnection.SendMessageForResponseAsync(value);
+                var (status, response) = await connection.SendMessageForResponseAsync(value);
                 return (status == Windows.ApplicationModel.AppService.AppServiceResponseStatus.Success
                     && response.Get("Success", false));
             }
@@ -286,7 +287,8 @@ namespace Files.ViewModels.Properties
 
         public async Task<bool> SetFileOwner(string ownerSid)
         {
-            if (AppInstance.ServiceConnection != null)
+            var connection = await AppServiceConnectionHelper.Instance;
+            if (connection != null)
             {
                 var value = new ValueSet()
                 {
@@ -296,7 +298,7 @@ namespace Files.ViewModels.Properties
                     { "isfolder", Item.PrimaryItemAttribute == Windows.Storage.StorageItemTypes.Folder && !Item.IsShortcutItem },
                     { "ownersid", ownerSid }
                 };
-                var (status, response) = await AppInstance.ServiceConnection.SendMessageForResponseAsync(value);
+                var (status, response) = await connection.SendMessageForResponseAsync(value);
                 return (status == Windows.ApplicationModel.AppService.AppServiceResponseStatus.Success
                     && response.Get("Success", false));
             }
@@ -305,7 +307,8 @@ namespace Files.ViewModels.Properties
 
         public async Task<string> OpenObjectPicker()
         {
-            if (AppInstance.ServiceConnection != null)
+            var connection = await AppServiceConnectionHelper.Instance;
+            if (connection != null)
             {
                 var value = new ValueSet()
                 {
@@ -313,7 +316,7 @@ namespace Files.ViewModels.Properties
                     { "fileop", "OpenObjectPicker" },
                     { "HWND", NativeWinApiHelper.CoreWindowHandle.ToInt64() }
                 };
-                var (status, response) = await AppInstance.ServiceConnection.SendMessageForResponseAsync(value);
+                var (status, response) = await connection.SendMessageForResponseAsync(value);
                 if (status == Windows.ApplicationModel.AppService.AppServiceResponseStatus.Success)
                 {
                     return response.Get("PickedObject", (string)null);
@@ -324,7 +327,8 @@ namespace Files.ViewModels.Properties
 
         public async Task<bool> SetAccessRuleProtection(bool isProtected, bool preserveInheritance)
         {
-            if (AppInstance.ServiceConnection != null)
+            var connection = await AppServiceConnectionHelper.Instance;
+            if (connection != null)
             {
                 var value = new ValueSet()
                 {
@@ -335,7 +339,7 @@ namespace Files.ViewModels.Properties
                     { "isprotected", isProtected },
                     { "preserveinheritance", preserveInheritance }
                 };
-                var (status, response) = await AppInstance.ServiceConnection.SendMessageForResponseAsync(value);
+                var (status, response) = await connection.SendMessageForResponseAsync(value);
                 return (status == Windows.ApplicationModel.AppService.AppServiceResponseStatus.Success
                     && response.Get("Success", false));
             }

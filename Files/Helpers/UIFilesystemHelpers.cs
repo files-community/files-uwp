@@ -19,7 +19,7 @@ namespace Files.Helpers
     {
         public static async void CutItem(IShellPage associatedInstance)
         {
-            DataPackage dataPackage = new DataPackage
+            DataPackage dataPackage = new DataPackage()
             {
                 RequestedOperation = DataPackageOperation.Move
             };
@@ -63,10 +63,11 @@ namespace Files.Helpers
                 else if (result.ErrorCode == FileSystemStatusCode.Unauthorized)
                 {
                     // Try again with fulltrust process
-                    if (associatedInstance.ServiceConnection != null)
+                    var connection = await AppServiceConnectionHelper.Instance;
+                    if (connection != null)
                     {
                         string filePaths = string.Join('|', associatedInstance.SlimContentPage.SelectedItems.Select(x => x.ItemPath));
-                        AppServiceResponseStatus status = await associatedInstance.ServiceConnection.SendMessageAsync(new ValueSet()
+                        AppServiceResponseStatus status = await connection.SendMessageAsync(new ValueSet()
                         {
                             { "Arguments", "FileOperation" },
                             { "fileop", "Clipboard" },
@@ -99,7 +100,7 @@ namespace Files.Helpers
             }
         }
 
-        public static async void CopyItem(IShellPage associatedInstance)
+        public static async Task CopyItem(IShellPage associatedInstance)
         {
             DataPackage dataPackage = new DataPackage()
             {
@@ -136,10 +137,11 @@ namespace Files.Helpers
                 if (result.ErrorCode == FileSystemStatusCode.Unauthorized)
                 {
                     // Try again with fulltrust process
-                    if (associatedInstance.ServiceConnection != null)
+                    var connection = await AppServiceConnectionHelper.Instance;
+                    if (connection != null)
                     {
                         string filePaths = string.Join('|', associatedInstance.SlimContentPage.SelectedItems.Select(x => x.ItemPath));
-                        await associatedInstance.ServiceConnection.SendMessageAsync(new ValueSet()
+                        await connection.SendMessageAsync(new ValueSet()
                         {
                             { "Arguments", "FileOperation" },
                             { "fileop", "Clipboard" },
@@ -268,11 +270,11 @@ namespace Files.Helpers
             return created.Result.Item2;
         }
 
-        public static async void CreateFolderWithSelectionAsync(IShellPage associatedInstance)
+        public static async Task CreateFolderWithSelectionAsync(IShellPage associatedInstance)
         {
             try
             {
-                CopyItem(associatedInstance);
+                await CopyItem(associatedInstance);
                 var folder = await CreateFileFromDialogResultTypeForResult(AddItemType.Folder, null, associatedInstance);
                 if (folder == null)
                 {

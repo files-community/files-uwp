@@ -2,6 +2,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
 using Windows.Foundation.Collections;
 using Windows.UI.Core;
@@ -10,16 +11,18 @@ namespace Files.Helpers
 {
     public static class QuickLookHelpers
     {
-        public static async void ToggleQuickLook(IShellPage associatedInstance)
+        public static async Task ToggleQuickLook(IShellPage associatedInstance)
         {
             try
             {
                 if (associatedInstance.SlimContentPage.IsItemSelected && !associatedInstance.SlimContentPage.IsRenamingItem)
                 {
                     Debug.WriteLine("Toggle QuickLook");
-                    if (associatedInstance.ServiceConnection != null)
+                    var connection = await AppServiceConnectionHelper.Instance;
+
+                    if (connection != null)
                     {
-                        await associatedInstance.ServiceConnection.SendMessageAsync(new ValueSet()
+                        await connection.SendMessageAsync(new ValueSet()
                         {
                             { "path", associatedInstance.SlimContentPage.SelectedItem.ItemPath },
                             { "Arguments", "ToggleQuickLook" }

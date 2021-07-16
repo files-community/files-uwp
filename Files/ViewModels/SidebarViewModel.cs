@@ -162,9 +162,9 @@ namespace Files.ViewModels
             App.AppSettings.PropertyChanged += AppSettings_PropertyChanged;
         }
 
-        public void EmptyRecycleBin(RoutedEventArgs e)
+        public async void EmptyRecycleBin(RoutedEventArgs e)
         {
-            RecycleBinHelpers.EmptyRecycleBin(PaneHolder.ActivePane);
+            await RecycleBinHelpers.S_EmptyRecycleBin();
         }
 
         private void AppSettings_PropertyChanged(object sender, PropertyChangedEventArgs e)

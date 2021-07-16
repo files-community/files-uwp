@@ -14,8 +14,6 @@ namespace Files
 
         CurrentInstanceViewModel InstanceViewModel { get; }
 
-        NamedPipeAsAppServiceConnection ServiceConnection { get; }
-
         IBaseLayout SlimContentPage { get; }
 
         Type CurrentPageType { get; }

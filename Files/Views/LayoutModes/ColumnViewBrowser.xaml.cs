@@ -422,7 +422,7 @@ namespace Files.Views.LayoutModes
             ItemManipulationModel.SetSelectedItem(objectPressed);
         }
 
-        private void FileList_PreviewKeyDown(object sender, KeyRoutedEventArgs e)
+        private async void FileList_PreviewKeyDown(object sender, KeyRoutedEventArgs e)
         {
             var ctrlPressed = Window.Current.CoreWindow.GetKeyState(VirtualKey.Control).HasFlag(CoreVirtualKeyStates.Down);
             var shiftPressed = Window.Current.CoreWindow.GetKeyState(VirtualKey.Shift).HasFlag(CoreVirtualKeyStates.Down);
@@ -446,7 +446,7 @@ namespace Files.Views.LayoutModes
                 {
                     if (App.MainViewModel.IsQuickLookEnabled)
                     {
-                        QuickLookHelpers.ToggleQuickLook(ParentShellPageInstance);
+                        await QuickLookHelpers.ToggleQuickLook(ParentShellPageInstance);
                     }
                     e.Handled = true;
                 }

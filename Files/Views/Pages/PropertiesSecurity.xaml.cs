@@ -39,11 +39,11 @@ namespace Files.Views
 
             if (np.navParameter is ListedItem listedItem)
             {
-                SecurityProperties = new SecurityProperties(listedItem, np.AppInstanceArgument);
+                SecurityProperties = new SecurityProperties(listedItem);
             }
             else if (np.navParameter is DriveItem driveitem)
             {
-                SecurityProperties = new SecurityProperties(driveitem, np.AppInstanceArgument);
+                SecurityProperties = new SecurityProperties(driveitem);
             }
 
             base.OnNavigatedTo(e);
@@ -94,8 +94,7 @@ namespace Files.Views
                         Frame frame = new Frame();
                         frame.Navigate(typeof(PropertiesSecurityAdvanced), new PropertiesPageNavigationArguments()
                         {
-                            Item = SecurityProperties.Item,
-                            AppInstanceArgument = AppInstance
+                            Item = SecurityProperties.Item
                         }, new SuppressNavigationTransitionInfo());
                         Window.Current.Content = frame;
                         Window.Current.Activate();

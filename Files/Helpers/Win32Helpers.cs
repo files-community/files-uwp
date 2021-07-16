@@ -24,7 +24,8 @@ namespace Files.Helpers
                 workingDirectory = associatedInstance.FilesystemViewModel.WorkingDirectory;
             }
 
-            if (associatedInstance.ServiceConnection != null)
+            var connection = await AppServiceConnectionHelper.Instance;
+            if (connection != null)
             {
                 var value = new ValueSet()
                 {
@@ -43,7 +44,7 @@ namespace Files.Helpers
                     value.Add("Parameters", arguments);
                 }
 
-                await associatedInstance.ServiceConnection.SendMessageAsync(value);
+                await connection.SendMessageAsync(value);
             }
         }
     }

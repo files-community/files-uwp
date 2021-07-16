@@ -576,7 +576,7 @@ namespace Files.ViewModels
             }
         }
 
-        public async void CheckPathInput(string currentInput, string currentSelectedPath, IShellPage shellPage)
+        public async Task CheckPathInput(string currentInput, string currentSelectedPath, IShellPage shellPage)
         {
             currentInput = currentInput.Replace("\\\\", "\\");
 
@@ -634,16 +634,17 @@ namespace Files.ViewModels
                                 if (terminal.Path.Equals(currentInput, StringComparison.OrdinalIgnoreCase)
                                     || terminal.Path.Equals(currentInput + ".exe", StringComparison.OrdinalIgnoreCase) || terminal.Name.Equals(currentInput, StringComparison.OrdinalIgnoreCase))
                                 {
-                                    if (shellPage.ServiceConnection != null)
+                                    var connection = await AppServiceConnectionHelper.Instance;
+                                    if (connection != null)
                                     {
-                                        var value = new ValueSet
+                                        var value = new ValueSet()
                                         {
                                             { "Arguments", "LaunchApp" },
                                             { "WorkingDirectory", workingDir },
                                             { "Application", terminal.Path },
                                             { "Parameters", string.Format(terminal.Arguments, workingDir) }
                                         };
-                                        await shellPage.ServiceConnection.SendMessageAsync(value);
+                                        await connection.SendMessageAsync(value);
                                     }
                                     return;
                                 }

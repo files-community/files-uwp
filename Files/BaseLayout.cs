@@ -17,6 +17,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.ApplicationModel.DataTransfer.DragDrop;
 using Windows.Storage;
@@ -38,7 +39,7 @@ namespace Files
     {
         private readonly DispatcherTimer jumpTimer;
 
-        protected NamedPipeAsAppServiceConnection Connection => ParentShellPageInstance?.ServiceConnection;
+        protected Task<NamedPipeAsAppServiceConnection> Connection => AppServiceConnectionHelper.Instance;
 
         public SelectedItemsPropertiesViewModel SelectedItemsPropertiesViewModel { get; }
 
@@ -519,12 +520,12 @@ namespace Files
             }
         }
 
-        public void BaseContextFlyout_Opening(object sender, object e)
+        public async void BaseContextFlyout_Opening(object sender, object e)
         {
             try
             {
                 var shiftPressed = Window.Current.CoreWindow.GetKeyState(VirtualKey.Shift).HasFlag(CoreVirtualKeyStates.Down);
-                var items = ContextFlyoutItemHelper.GetBaseContextCommands(connection: Connection, currentInstanceViewModel: InstanceViewModel, itemViewModel: ParentShellPageInstance.FilesystemViewModel, commandsViewModel: CommandsViewModel, shiftPressed: shiftPressed, false);
+                var items = ContextFlyoutItemHelper.GetBaseContextCommands(connection: await Connection, currentInstanceViewModel: InstanceViewModel, itemViewModel: ParentShellPageInstance.FilesystemViewModel, commandsViewModel: CommandsViewModel, shiftPressed: shiftPressed, false);
                 BaseContextMenuFlyout.Items.Clear();
                 ItemModelListToContextFlyoutHelper.GetMenuFlyoutItemsFromModel(items).ForEach(i => BaseContextMenuFlyout.Items.Add(i));
             }
@@ -534,11 +535,11 @@ namespace Files
             }
         }
 
-        private void LoadMenuItemsAsync()
+        private async void LoadMenuItemsAsync()
         {
             SelectedItemsPropertiesViewModel.CheckFileExtension(SelectedItem?.FileExtension);
             var shiftPressed = Window.Current.CoreWindow.GetKeyState(VirtualKey.Shift).HasFlag(CoreVirtualKeyStates.Down);
-            var items = ContextFlyoutItemHelper.GetItemContextCommands(connection: Connection, currentInstanceViewModel: InstanceViewModel, workingDir: ParentShellPageInstance.FilesystemViewModel.WorkingDirectory, selectedItems: SelectedItems, selectedItemsPropertiesViewModel: SelectedItemsPropertiesViewModel, commandsViewModel: CommandsViewModel, shiftPressed: shiftPressed, showOpenMenu: false);
+            var items = ContextFlyoutItemHelper.GetItemContextCommands(connection: await Connection, currentInstanceViewModel: InstanceViewModel, workingDir: ParentShellPageInstance.FilesystemViewModel.WorkingDirectory, selectedItems: SelectedItems, selectedItemsPropertiesViewModel: SelectedItemsPropertiesViewModel, commandsViewModel: CommandsViewModel, shiftPressed: shiftPressed, showOpenMenu: false);
             ItemContextMenuFlyout.PrimaryCommands.Clear();
             ItemContextMenuFlyout.SecondaryCommands.Clear();
             var (primaryElements, secondaryElements) = ItemModelListToContextFlyoutHelper.GetAppBarItemsFromModel(items);
