@@ -127,6 +127,7 @@ namespace Files.Views
                     paneArgs.LeftPaneNavPathParam : paneArgs.RightPaneNavPathParam);
                 UpdateStatusBarProperties();
                 UpdatePreviewPaneProperties();
+                UpdateNavToolbarProperties();
             }
         }
 
@@ -167,9 +168,24 @@ namespace Files.Views
         {
             if (NavToolbar != null)
             {
+                if(SidebarAdaptiveViewModel.PaneHolder?.ActivePane.SlimContentPage != null)
+                {
+                    SidebarAdaptiveViewModel.PaneHolder.ActivePane.SlimContentPage.ContextItemsChanged -= SlimContentPage_ContextItemsChanged;
+                    SidebarAdaptiveViewModel.PaneHolder.ActivePane.SlimContentPage.ContextItemsChanged += SlimContentPage_ContextItemsChanged;
+                    NavToolbar.SetCommandBarContextItems(SidebarAdaptiveViewModel.PaneHolder.ActivePane.SlimContentPage.SelectionContextItems);
+                }
+
                 NavToolbar.ViewModel = SidebarAdaptiveViewModel.PaneHolder?.ActivePane.NavToolbarViewModel;
                 NavToolbar.ShowMultiPaneControls = SidebarAdaptiveViewModel.PaneHolder?.IsMultiPaneEnabled ?? false;
                 NavToolbar.IsMultiPaneActive = SidebarAdaptiveViewModel.PaneHolder?.IsMultiPaneActive ?? false;
+            }
+        }
+
+        private void SlimContentPage_ContextItemsChanged(IBaseLayout sender, Events.ContextItemsChangedEventArgs args)
+        {
+            if(sender == SidebarAdaptiveViewModel.PaneHolder?.ActivePane.SlimContentPage && sender != null)
+            {
+                NavToolbar.SetCommandBarContextItems(args.Items);
             }
         }
 

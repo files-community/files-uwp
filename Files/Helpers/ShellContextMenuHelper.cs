@@ -17,14 +17,46 @@ namespace Files.Helpers
 {
     public static class ShellContextmenuHelper
     {
-        public static List<ContextMenuFlyoutItemViewModel> SetShellContextmenu(List<ContextMenuFlyoutItemViewModel> baseItems, bool shiftPressed, bool showOpenMenu, NamedPipeAsAppServiceConnection connection, string workingDirectory, List<ListedItem> selectedItems)
+        public static async Task<List<ContextMenuFlyoutItemViewModel>> GetShellContextmenuAsync(bool showOpenMenu, NamedPipeAsAppServiceConnection connection, string workingDirectory, List<ListedItem> selectedItems)
+        {
+            bool IsItemSelected = selectedItems?.Count > 0;
+
+            var menuItemsList = new List<ContextMenuFlyoutItemViewModel>();
+
+            if (connection != null)
+            {
+                var (status, response) = await Task.Run(async () =>
+                    await connection.SendMessageForResponseAsync(new ValueSet()
+                    {
+                        { "Arguments", "LoadContextMenu" },
+                        { "FilePath", IsItemSelected ?
+                            string.Join('|', selectedItems.Select(x => x.ItemPath)) :
+                            workingDirectory},
+                        { "ExtendedMenu", true },
+                        { "ShowOpenMenu", showOpenMenu }
+                }));
+
+                if (status == AppServiceResponseStatus.Success
+                    && response.ContainsKey("Handle"))
+                {
+                    var contextMenu = JsonConvert.DeserializeObject<Win32ContextMenu>((string)response["ContextMenu"]);
+                    if (contextMenu != null)
+                    {
+                        LoadMenuFlyoutItem(menuItemsList, contextMenu.Items, (string)response["Handle"], true);
+                    }
+                }
+            }
+
+            return menuItemsList;
+        }
+        public static List<ContextMenuFlyoutItemViewModel> SetShellContextmenu(List<ContextMenuFlyoutItemViewModel> baseItems, bool shiftPressed, bool showOpenMenu, NamedPipeAsAppServiceConnection connection, string workingDirectory, List<ListedItem> selectedItems, bool overflowItems = true)
         {
             bool IsItemSelected = selectedItems?.Count > 0;
 
             var menuItemsList = new List<ContextMenuFlyoutItemViewModel>(baseItems);
 
             var currentBaseLayoutItemCount = baseItems.Count;
-            var maxItems = !App.AppSettings.MoveOverflowMenuItemsToSubMenu ? int.MaxValue : shiftPressed ? 6 : 4;
+            var maxItems = !overflowItems || !App.AppSettings.MoveOverflowMenuItemsToSubMenu ? int.MaxValue : shiftPressed ? 6 : 4;
 
             if (connection != null)
             {

@@ -200,6 +200,7 @@
     <Compile Include="Enums\FolderLayoutModes.cs" />
     <Compile Include="EventArguments\Bundles\BundlesOpenPathEventArgs.cs" />
     <Compile Include="EventArguments\LayoutPreferenceEventArgs.cs" />
+    <Compile Include="Events\ContextItemsChangedEventArgs.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\EnumExtensions.cs" />
     <Compile Include="Extensions\FileIconInfoExtensions.cs" />
@@ -258,6 +259,9 @@
     <Compile Include="ISearchBox.cs" />
     <Compile Include="UserControls\ArrangementOptions.xaml.cs">
       <DependentUpon>ArrangementOptions.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\ColoredIcon.xaml.cs">
+      <DependentUpon>ColoredIcon.xaml</DependentUpon>
     </Compile>
     <Compile Include="UserControls\DataGridHeader.xaml.cs">
       <DependentUpon>DataGridHeader.xaml</DependentUpon>
@@ -1005,6 +1009,9 @@
     </Content>
     <Content Include="Assets\AnimatedVisuals\LottiePulseStatusCenter.json" />
     <Content Include="Resources\MiddleClickScrolling-CursorType.res" />
+    <Content Include="Assets\Custom Glyphs\Colored-Icons.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="Assets\terminal\terminal.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -1108,6 +1115,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="UserControls\ArrangementOptions.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\ColoredIcon.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

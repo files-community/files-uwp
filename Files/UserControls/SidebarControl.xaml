@@ -16,7 +16,7 @@
     d:DesignWidth="200"
     CompactModeThresholdWidth="750"
     IsBackButtonVisible="Collapsed"
-    IsPaneToggleButtonVisible="True"
+    IsPaneToggleButtonVisible="False"
     IsSettingsVisible="True"
     IsTitleBarAutoPaddingEnabled="False"
     ItemInvoked="Sidebar_ItemInvoked"
@@ -228,21 +228,18 @@
                                 <!--  I exist to make a nice looking background for both the tab strip without interfering with the drag area grid  -->
                                 <Border
                                     x:Name="TitlebarBackgroundBorder"
-                                    Grid.RowSpan="2"
-                                    Grid.Column="{Binding ElementName=ContentRoot, Path=(Grid.Column), Mode=OneWay}"
-                                    Grid.ColumnSpan="{Binding ElementName=ContentRoot, Path=(Grid.ColumnSpan), Mode=OneWay}"
+                                    Grid.ColumnSpan="2"
                                     VerticalAlignment="Stretch"
                                     Background="{ThemeResource TitlebarContentBackgroundBrush}"
                                     BorderBrush="{ThemeResource NavigationViewContentGridBorderBrush}"
                                     BorderThickness="{ThemeResource NavigationViewContentGridBorderThickness}"
-                                    CornerRadius="8,0,0,0"
-                                    IsHitTestVisible="False"
-                                    RenderTransform="{Binding ElementName=ContentRoot, Path=RenderTransform, Mode=OneWay}" />
+                                    CornerRadius="0,0,0,0"
+                                    IsHitTestVisible="False" />
 
                                 <!--  Pane Content Area  -->
                                 <Grid
                                     x:Name="PaneRoot"
-                                    Grid.RowSpan="3"
+                                    Grid.Row="1"
                                     Grid.ColumnSpan="2"
                                     Width="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=TemplateSettings.OpenPaneLength}"
                                     HorizontalAlignment="Left"
@@ -282,7 +279,7 @@
                                 <!--  This allows the user to resize the pane  -->
                                 <Grid
                                     x:Name="ResizeElementBorder"
-                                    Grid.RowSpan="3"
+                                    Grid.Row="1"
                                     Grid.Column="{Binding ElementName=PaneRoot, Path=(Grid.Column), Mode=OneWay}"
                                     Width="8"
                                     HorizontalAlignment="Right"
@@ -312,7 +309,7 @@
                                     x:Name="DragArea"
                                     Grid.ColumnSpan="2"
                                     Height="50"
-                                    Margin="38,0,0,0"
+                                    Margin="0,0,0,0"
                                     HorizontalAlignment="Stretch"
                                     VerticalAlignment="Top"
                                     Background="Transparent"
@@ -322,11 +319,10 @@
                                 <!--  This is a special spot just for tabs so that the title bar DragArea can function properly  -->
                                 <Border
                                     x:Name="TabContentBorder"
-                                    Grid.Column="{Binding ElementName=ContentRoot, Path=(Grid.Column), Mode=OneWay}"
-                                    Grid.ColumnSpan="{Binding ElementName=ContentRoot, Path=(Grid.ColumnSpan), Mode=OneWay}"
+                                    Grid.Column="0"
+                                    Grid.ColumnSpan="2"
                                     VerticalAlignment="Top"
-                                    Canvas.ZIndex="2"
-                                    RenderTransform="{Binding ElementName=ContentRoot, Path=RenderTransform, Mode=OneWay}" />
+                                    Canvas.ZIndex="2" />
 
                                 <!--  Content Area  -->
                                 <Grid
@@ -823,11 +819,8 @@
                                                 </Storyboard>
                                             </VisualTransition>
                                         </VisualStateGroup.Transitions>
-                                        <VisualState x:Name="Closed">
-                                            <VisualState.Setters>
-                                                <Setter Target="TitlebarBackgroundBorder.CornerRadius" Value="0" />
-                                            </VisualState.Setters>
-                                        </VisualState>
+                                        <VisualState x:Name="Closed" />
+
                                         <VisualState x:Name="ClosedCompactLeft">
 
                                             <Storyboard>
@@ -1064,16 +1057,6 @@
             </Style>
         </ResourceDictionary>
     </muxc:NavigationView.Resources>
-
-    <muxc:NavigationView.PaneHeader>
-        <TextBlock
-            x:Uid="SidebarHeader"
-            Margin="10,6"
-            VerticalAlignment="Center"
-            FontSize="16"
-            FontWeight="SemiBold"
-            Text="Files" />
-    </muxc:NavigationView.PaneHeader>
 
     <muxc:NavigationView.MenuItemTemplateSelector>
         <local:NavItemDataTemplateSelector

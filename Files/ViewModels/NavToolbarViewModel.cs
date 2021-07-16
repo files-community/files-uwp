@@ -509,8 +509,6 @@ namespace Files.ViewModels
 
         public ICommand OpenDirectoryInDefaultTerminalCommand { get; set; }
 
-        public ICommand AddNewTabToMultitaskingControlCommand { get; set; }
-
         public ICommand CreateNewFileCommand { get; set; }
 
         public ICommand CreateNewFolderCommand { get; set; }

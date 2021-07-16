@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 
@@ -37,6 +38,18 @@ namespace Files.Helpers.ContextFlyouts
             secondaryModels.ForEach(i => secondary.Add(GetCommandBarItem(i)));
 
             return (primary, secondary);
+        }
+
+        /// <summary>
+        /// Same as GetAppBarItemsFromModel, but ignores the IsPrimary property and returns one list
+        /// </summary>
+        /// <param name="items"></param>
+        /// <returns></returns>
+        public static List<ICommandBarElement> GetAppBarButtonsFromModelIgnorePrimary(List<ContextMenuFlyoutItemViewModel> items)
+        {
+            var elements = new List<ICommandBarElement>();
+            items.ForEach(i => elements.Add(GetCommandBarItem(i)));
+            return elements;
         }
 
         private static MenuFlyoutItemBase GetMenuItem(ContextMenuFlyoutItemViewModel item)
@@ -139,7 +152,11 @@ namespace Files.Helpers.ContextFlyouts
         {
             return item.ItemType switch
             {
-                ItemType.Separator => new AppBarSeparator(),
+                ItemType.Separator => new AppBarSeparator()
+                {
+                    Tag = item.Tag,
+                    Visibility = item.IsHidden ? Visibility.Collapsed : Visibility.Visible,
+                },
                 _ => GetCommandBarButton(item),
             };
         }
@@ -161,19 +178,30 @@ namespace Files.Helpers.ContextFlyouts
                 var fontFamily = App.Current.Resources[item.GlyphFontFamilyName] as FontFamily;
                 icon.FontFamily = fontFamily;
             }
+
             MenuFlyout ctxFlyout = null;
-            if (item.Items.Count > 0)
+            if (item.Items.Count > 0 || item.ID == "ItemOverflow")
             {
                 ctxFlyout = new MenuFlyout();
                 GetMenuFlyoutItemsFromModel(item.Items).ForEach(i => ctxFlyout.Items.Add(i));
             }
 
-            Image content = null;
+            UIElement content = null;
             if (item.BitmapIcon != null)
             {
                 content = new Image()
                 {
                     Source = item.BitmapIcon,
+                };
+            } else if(item.ColoredIcon.IsValid)
+            {
+                content = item.ColoredIcon.ToColoredIcon();
+            } else if(item.ShowLoadingIndicator)
+            {
+                content = new Microsoft.UI.Xaml.Controls.ProgressRing()
+                {
+                    IsIndeterminate = true,
+                    IsActive = true,
                 };
             }
 
@@ -187,7 +215,9 @@ namespace Files.Helpers.ContextFlyouts
                     CommandParameter = item.CommandParameter,
                     IsChecked = item.IsChecked,
                     Content = content,
-                    IsEnabled = item.IsEnabled
+                    LabelPosition = item.CollapseLabel ? CommandBarLabelPosition.Collapsed : CommandBarLabelPosition.Default,
+                    IsEnabled = item.IsEnabled,
+                    Visibility = item.IsHidden ? Visibility.Collapsed : Visibility.Visible,
                 };
 
                 if (icon != null)
@@ -195,7 +225,7 @@ namespace Files.Helpers.ContextFlyouts
                     (element as AppBarToggleButton).Icon = icon;
                 }
 
-                if (item.IsPrimary)
+                if (item.IsPrimary || item.CollapseLabel)
                 {
                     (element as AppBarToggleButton).SetValue(ToolTipService.ToolTipProperty, item.Text);
                 }
@@ -209,8 +239,10 @@ namespace Files.Helpers.ContextFlyouts
                     Command = item.Command,
                     CommandParameter = item.CommandParameter,
                     Flyout = ctxFlyout,
+                    LabelPosition = item.CollapseLabel ? CommandBarLabelPosition.Collapsed : CommandBarLabelPosition.Default,
                     Content = content,
-                    IsEnabled = item.IsEnabled
+                    IsEnabled = item.IsEnabled,
+                    Visibility = item.IsHidden ? Visibility.Collapsed : Visibility.Visible,
                 };
 
                 if (icon != null)
@@ -218,7 +250,7 @@ namespace Files.Helpers.ContextFlyouts
                     (element as AppBarButton).Icon = icon;
                 }
 
-                if (item.IsPrimary)
+                if (item.IsPrimary || item.CollapseLabel)
                 {
                     (element as AppBarButton).SetValue(ToolTipService.ToolTipProperty, item.Text);
                 }

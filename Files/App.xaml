@@ -25,6 +25,8 @@
                 SizeKind="Large" />
             <FontFamily x:Key="CustomGlyph">/Assets/Custom Glyphs/Custom-Glyphs.ttf#Custom-Glyphs</FontFamily>
             <FontFamily x:Key="RecycleBinIcons">/Assets/Custom Glyphs/recyclebin-fabric-glyph.ttf#Fabric MDL2 Assets</FontFamily>
+            <FontFamily x:Key="ColoredIconFontFamily">/Assets/Custom Glyphs/Colored-Icons.ttf#Untitled1</FontFamily>
+
             <ResourceDictionary.MergedDictionaries>
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" ControlsResourcesVersion="Version2" />
                 <ResourceDictionary>
@@ -67,8 +69,7 @@
                             <StaticResource x:Key="PropertiesDialogRootBackgroundBrush" ResourceKey="RootBackgroundBrush" />
 
                             <SolidColorBrush x:Key="TitlebarContentBackgroundBrush" Color="#113A3A3A" />
-
-                            <Color x:Key="LayerFillColorDefault">#11000000</Color>
+                            <SolidColorBrush x:Key="NavigationViewContentBackground" Color="#013A3A3A" />
                         </ResourceDictionary>
                         <ResourceDictionary x:Key="Dark">
                             <SolidColorBrush x:Key="CloudDriveSyncStatusOnlineColor" Color="#0078D7" />
@@ -110,8 +111,7 @@
                             <StaticResource x:Key="PropertiesDialogRootBackgroundBrush" ResourceKey="RootBackgroundBrush" />
 
                             <SolidColorBrush x:Key="TitlebarContentBackgroundBrush" Color="#3C3A3A3A" />
-
-                            <Color x:Key="LayerFillColorDefault">#11000000</Color>
+                            <SolidColorBrush x:Key="NavigationViewContentBackground" Color="#0C3A3A3A" />
                         </ResourceDictionary>
                         <ResourceDictionary x:Key="HighContrast">
                             <SolidColorBrush x:Key="ApplicationPageBackgroundThemeBrush" Color="{StaticResource SystemColorWindowColor}" />
@@ -164,6 +164,7 @@
                             <SolidColorBrush x:Key="TitlebarContentBackgroundBrush" Color="#3C3A3A3A" />
 
                             <Color x:Key="LayerFillColorDefault">#11000000</Color>
+                            <SolidColorBrush x:Key="NavigationViewContentBackground" Color="#0F000000" />
                         </ResourceDictionary>
                     </ResourceDictionary.ThemeDictionaries>
                     <LinearGradientBrush x:Key="ControlElevationBorderBrush" MappingMode="Absolute" StartPoint="0,0" EndPoint="0,3">
@@ -175,6 +176,8 @@
                             <GradientStop Offset="1.0" Color="{ThemeResource ControlStrokeColorDefault}" />
                         </LinearGradientBrush.GradientStops>
                     </LinearGradientBrush>
+
+                    <CornerRadius x:Key="NavigationViewContentGridCornerRadius">0,0,0,0</CornerRadius>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

@@ -203,7 +203,6 @@ namespace Files.Views
             NavToolbarViewModel.OpenNewPaneCommand = new RelayCommand(() => PaneHolder?.OpenPathInNewPane("NewTab".GetLocalized()));
             NavToolbarViewModel.ClosePaneCommand = new RelayCommand(() => PaneHolder?.CloseActivePane());
             NavToolbarViewModel.OpenDirectoryInDefaultTerminalCommand = new RelayCommand(() => NavigationHelpers.OpenDirectoryInTerminal(this.FilesystemViewModel.WorkingDirectory, this));
-            NavToolbarViewModel.AddNewTabToMultitaskingControlCommand = new RelayCommand(async () => await MainPageViewModel.AddNewTabAsync());
             NavToolbarViewModel.CreateNewFileCommand = new RelayCommand<ShellNewEntry>(x => UIFilesystemHelpers.CreateFileFromDialogResultType(AddItemType.File, x, this));
             NavToolbarViewModel.CreateNewFolderCommand = new RelayCommand(() => UIFilesystemHelpers.CreateFileFromDialogResultType(AddItemType.Folder, null, this));
         }

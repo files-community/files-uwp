@@ -123,9 +123,6 @@
   <data name="SideBarOpenInNewWindow.Text" xml:space="preserve">
     <value>Open in new window</value>
   </data>
-  <data name="NavigationToolbarNewTab.Label" xml:space="preserve">
-    <value>New tab</value>
-  </data>
   <data name="NavigationToolbarNewWindow.Label" xml:space="preserve">
     <value>New window</value>
   </data>
@@ -2564,7 +2561,7 @@
   </data>
   <data name="NavigationToolbarExitCompactOverlay.Label" xml:space="preserve">
     <value>Exit compact overlay</value>
-</data>
+  </data>
   <data name="PropertyFileDescription" xml:space="preserve">
     <value>File description</value>
   </data>
@@ -2612,5 +2609,11 @@
   </data>
   <data name="SideBarHideSectionFromSideBar.Text" xml:space="preserve">
     <value>Hide {0} section</value>
+  </data>
+  <data name="NavSettingsButton.AutomationProperties.Name" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="NavSettingsButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Settings</value>
   </data>
 </root>

@@ -324,6 +324,8 @@
                             </Setter.Value>
                         </Setter>
                     </Style>
+
+                    <Style x:Key="AccentColorFontIconStyle" TargetType="FontIcon" />
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
@@ -345,6 +347,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
@@ -467,8 +470,8 @@
                 VerticalAlignment="Center"
                 extensions:FrameworkElementExtensions.Cursor="Hand"
                 x:Load="{x:Bind ViewModel.ClickablePathLoaded, Mode=OneWay}"
-                Background="{ThemeResource NavigationToolbarBreadcrumbBackgroundBrush}"
-                BorderBrush="{ThemeResource ControlElevationBorderBrush}"
+                Background="{ThemeResource TextControlBackground}"
+                BorderBrush="{ThemeResource TextControlBorderBrush}"
                 BorderThickness="1"
                 CornerRadius="{StaticResource ControlCornerRadius}"
                 PointerPressed="ManualPathEntryItem_Click"
@@ -482,14 +485,15 @@
 
             <uc:SearchBox
                 x:Name="SearchRegion"
-                Grid.Column="1"
+                Grid.Column="2"
+                Width="240"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Center"
                 Canvas.ZIndex="100"
                 CornerRadius="{StaticResource ControlCornerRadius}"
+                IsEnabled="{x:Bind ViewModel.InstanceViewModel.IsPageTypeNotHome, Mode=OneWay}"
                 LostFocus="SearchRegion_LostFocus"
-                SearchBoxViewModel="{x:Bind ViewModel.SearchBoxViewModel, Mode=OneWay}"
-                Visibility="{x:Bind ViewModel.IsSearchBoxVisible, Mode=OneWay}">
+                SearchBoxViewModel="{x:Bind ViewModel.SearchBoxViewModel, Mode=OneWay}">
                 <uc:SearchBox.KeyboardAccelerators>
                     <KeyboardAccelerator Key="Escape" Invoked="SearchBox_Escaped" />
                 </uc:SearchBox.KeyboardAccelerators>
@@ -507,7 +511,8 @@
                 Click="SearchButton_Click"
                 IsEnabled="{x:Bind ViewModel.InstanceViewModel.IsPageTypeNotHome, Mode=OneWay}"
                 Style="{StaticResource ToolBarButtonStyle}"
-                ToolTipService.ToolTip="Search (Ctrl+F)">
+                ToolTipService.ToolTip="Search (Ctrl+F)"
+                Visibility="Collapsed">
                 <FontIcon FontSize="14" Glyph="{x:Bind ViewModel.SearchButtonGlyph, Mode=OneWay}" />
                 <Button.KeyboardAccelerators>
                     <KeyboardAccelerator
@@ -516,11 +521,25 @@
                         Modifiers="Control" />
                 </Button.KeyboardAccelerators>
             </Button>
+
+            <Button
+                x:Name="SettingsButton"
+                x:Uid="NavSettingsButton"
+                Grid.Column="3"
+                Width="36"
+                Height="32"
+                AutomationProperties.Name="Settings"
+                Background="Transparent"
+                Style="{StaticResource ToolBarButtonStyle}"
+                ToolTipService.ToolTip="Settings">
+                <FontIcon FontSize="14" Glyph="&#xE115;" />
+            </Button>
         </Grid>
 
         <CommandBar
+            x:Name="ContextCommandBar"
             Grid.Row="1"
-            HorizontalAlignment="Right"
+            HorizontalAlignment="Stretch"
             VerticalAlignment="Center"
             DefaultLabelPosition="Right">
             <CommandBar.Resources>
@@ -529,6 +548,7 @@
                     <SolidColorBrush x:Key="CommandBarBorderBrushOpen" Color="Transparent" />
                 </ResourceDictionary>
             </CommandBar.Resources>
+            <AppBarSeparator x:Name="CurrentItemOptionSeparator" />
             <AppBarButton
                 x:Name="WidgetsManager"
                 x:Uid="NavToolbarWidgets"
@@ -575,10 +595,13 @@
             <AppBarButton
                 x:Name="SelectionOptions"
                 x:Uid="NavToolbarSelectionOptions"
+                Width="Auto"
+                MinWidth="40"
                 x:Load="{x:Bind ViewModel.InstanceViewModel.IsPageTypeNotHome, Mode=OneWay}"
                 AccessKey="S"
                 AutomationProperties.Name="Selection options"
                 Label="Select"
+                LabelPosition="Collapsed"
                 ToolTipService.ToolTip="Selection options">
                 <AppBarButton.Icon>
                     <FontIcon
@@ -636,17 +659,23 @@
             <AppBarButton
                 x:Name="ArrangementOptions"
                 x:Uid="NavToolbarSortOptionsButton"
+                Width="Auto"
+                MinWidth="40"
                 x:Load="{x:Bind ViewModel.InstanceViewModel.IsPageTypeNotHome, Mode=OneWay}"
                 AccessKey="A"
                 AutomationProperties.Name="Sort"
                 Label="Sort"
+                LabelPosition="Collapsed"
                 ToolTipService.ToolTip="Sort">
-                <AppBarButton.Icon>
+                <!--<AppBarButton.Icon>
                     <FontIcon
                         FontSize="10"
                         Foreground="{ThemeResource SystemAccentColor}"
                         Glyph="&#xE174;" />
-                </AppBarButton.Icon>
+                </AppBarButton.Icon>-->
+                <AppBarButton.Content>
+                    <uc:ColoredIcon BaseLayerGlyph="&#xF029;" OverlayLayerGlyph="&#xF02A;" />
+                </AppBarButton.Content>
                 <AppBarButton.Flyout>
                     <Flyout>
                         <uc:ArrangementOptions
@@ -662,10 +691,13 @@
             <AppBarButton
                 x:Name="LayoutOptionsButton"
                 x:Uid="NavToolbarLayoutOptionsButton"
+                Width="Auto"
+                MinWidth="40"
                 x:Load="{x:Bind ViewModel.InstanceViewModel.IsPageTypeNotHome, Mode=OneWay}"
                 AccessKey="L"
                 AutomationProperties.Name="Layout"
                 Label="Layout"
+                LabelPosition="Collapsed"
                 ToolTipService.ToolTip="Layout">
                 <AppBarButton.Icon>
                     <FontIcon
@@ -806,11 +838,14 @@
             <AppBarToggleButton
                 x:Name="PreviewPane"
                 x:Uid="PreviewPaneToggle"
+                Width="Auto"
+                MinWidth="40"
                 AccessKey="P"
                 AutomationProperties.Name="Toggle preview pane"
                 IsChecked="{x:Bind AppSettings.PreviewPaneEnabled, Mode=TwoWay}"
                 IsEnabled="{x:Bind ShowPreviewPaneButton, Mode=OneWay}"
                 Label="Preview"
+                LabelPosition="Collapsed"
                 ToolTipService.ToolTip="Toggle the preview pane (Ctrl+P)"
                 Visibility="{x:Bind ShowPreviewPaneButton, Mode=OneWay}">
                 <AppBarToggleButton.Icon>
@@ -851,21 +886,6 @@
                             Key="W"
                             IsEnabled="False"
                             Modifiers="Control,Shift" />
-                    </AppBarButton.KeyboardAccelerators>
-                </AppBarButton>
-                <AppBarButton
-                    x:Name="NavToolbarNewTab"
-                    x:Uid="NavigationToolbarNewTab"
-                    Command="{x:Bind ViewModel.AddNewTabToMultitaskingControlCommand, Mode=OneWay}"
-                    Label="New tab">
-                    <AppBarButton.Icon>
-                        <FontIcon FontFamily="{StaticResource CustomGlyph}" Glyph="&#xF113;" />
-                    </AppBarButton.Icon>
-                    <AppBarButton.KeyboardAccelerators>
-                        <KeyboardAccelerator
-                            Key="T"
-                            IsEnabled="False"
-                            Modifiers="Control" />
                     </AppBarButton.KeyboardAccelerators>
                 </AppBarButton>
                 <AppBarButton
