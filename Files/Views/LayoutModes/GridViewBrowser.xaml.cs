@@ -196,7 +196,6 @@ namespace Files.Views.LayoutModes
         {
             FileList.ItemTemplate = (FolderSettings.LayoutMode == FolderLayoutModes.TilesView) ? TilesBrowserTemplate : GridViewBrowserTemplate; // Choose Template
             SetItemMinWidth();
-            itemTemplateChanging = true;
 
             // Set GridViewSize event handlers
             if (FolderSettings.LayoutMode == FolderLayoutModes.TilesView)
@@ -217,8 +216,6 @@ namespace Files.Views.LayoutModes
         {
             NotifyPropertyChanged(nameof(GridViewItemMinWidth));
         }
-
-        private bool itemTemplateChanging = false;
 
         private void StackPanel_RightTapped(object sender, RightTappedRoutedEventArgs e)
         {
@@ -483,7 +480,6 @@ namespace Files.Views.LayoutModes
                 listedItem.ItemPropertiesInitialized = false;
                 if (FileList.ContainerFromItem(listedItem) != null)
                 {
-                    listedItem.ItemPropertiesInitialized = true;
                     await ParentShellPageInstance.FilesystemViewModel.LoadExtendedItemProperties(listedItem, currentIconSize);
                 }
             }
@@ -545,28 +541,15 @@ namespace Files.Views.LayoutModes
         {
             if (!args.InRecycleQueue)
             {
-                // This resizes the items after the item template has been changed and reloaded
-                if (itemTemplateChanging)
-                {
-                    itemTemplateChanging = false;
-                }
-
                 InitializeDrag(args.ItemContainer);
+                args.ItemContainer.PointerPressed -= FileListGridItem_PointerPressed;
+                args.ItemContainer.PointerPressed += FileListGridItem_PointerPressed;
+
                 if (args.Item is ListedItem item && !item.ItemPropertiesInitialized)
                 {
-                    args.ItemContainer.PointerPressed += FileListGridItem_PointerPressed;
-
                     args.RegisterUpdateCallback(3, async (s, c) =>
                     {
-                        item.ItemPropertiesInitialized = true;
                         await ParentShellPageInstance.FilesystemViewModel.LoadExtendedItemProperties(item, currentIconSize);
-                    });
-                }
-                else if (args.Item is ListedItem item1 && item1.ItemPropertiesInitialized && !item1.LoadFileIcon)
-                {
-                    args.RegisterUpdateCallback(3, async (s, c) =>
-                    {
-                        await ParentShellPageInstance.FilesystemViewModel.LoadItemThumbnail(item1, currentIconSize);
                     });
                 }
             }
@@ -574,10 +557,9 @@ namespace Files.Views.LayoutModes
             {
                 UninitializeDrag(args.ItemContainer);
                 args.ItemContainer.PointerPressed -= FileListGridItem_PointerPressed;
-
-                if (args.Item is ListedItem item && item.ItemPropertiesInitialized && item.LoadFileIcon)
+                if (args.Item is ListedItem item)
                 {
-                    ParentShellPageInstance.FilesystemViewModel.UnloadItemThumbnail(item);
+                    ParentShellPageInstance.FilesystemViewModel.CancelExtendedPropertiesLoadingForItem(item);
                 }
             }
         }
